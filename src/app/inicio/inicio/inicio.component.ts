@@ -13,7 +13,7 @@ export class InicioComponent implements OnInit {
   i = 11; // leer desde input
   j = 11; // leer desde input
   n = 11; // leer desde input
-  //habitaciones: Habitacion[] = [new Habitacion(numeroHabitacion=1), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  //habitaciones: Habitacion[] = [new Habitacion(numeroHabitacion=1, numeroCamas=4), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
   disponibilidad = true;
   camasLibres = 0;
   precioHabitacion = 10;
@@ -21,12 +21,11 @@ export class InicioComponent implements OnInit {
   fechaReserva = 0;
   // oc: any[][] = [
   //   [this.habitaciones],
-  //   [this.camasLibres],
   //   [this.fechaReserva],
   // ];
   cantidadPersonas = 0;
   tiempoEstadia: number = 0;
-  //tiempoAnticipadoReserva: number=0;
+  tiempoAnticipadoReserva: number = 0;
 
   // class Habitacion {
   // numeroHabitacion: number=0;
@@ -34,60 +33,61 @@ export class InicioComponent implements OnInit {
   // }
 
   //  class Cama{
-  //   numeroCama=0;
+  //   
   //   ocupada =false;
+  //   constructor(public numeroCama:number){
+  //}
   // }
 
-  // generarCantidadPersonas() {
-  //   return 1;
-  // }
-  // generarTiempoEstadia() {
-  //   return 1;
-  // }
-  // generarTiempoAnticipacionReserva() {
-  //   return 1;
-  // }
+  generarCantidadPersonas() {
+    return 1;
+  }
+  generarTiempoEstadia() {
+    return 1;
+  }
+  generarTiempoAnticipacionReserva() {
+    return 1;
+  }
 
-  // precio(precio: number, cantidadPersonas: number, tiempoEstadia: number) {
-  //   return precio + cantidadPersonas * this.precioHabitacion * tiempoEstadia;
-  // }
+  precio(precio: number, cantidadPersonas: number, tiempoEstadia: number) {
+    return precio + cantidadPersonas * this.precioHabitacion * tiempoEstadia;
+  }
 
-  // tiempoProximoPedidoReserva(tiempo: number, ipr: number) {
-  //   return tiempo + ipr;
-  // }
+  tiempoProximoPedidoReserva(tiempo: number, ipr: number) {
+    return tiempo + ipr;
+  }
 
-  // calcularFechaReserva(tiempo: number, tar: number) {
-  //   return tiempo + tar;
-  // }
+  calcularFechaReserva(tiempo: number, tar: number) {
+    return tiempo + tar;
+  }
 
   // constructor() {}
 
-  // generarIntervaloPedidosReserva() {
-  //   //intervalo entre pedidos
-  //   return 1;
-  // }
+  generarIntervaloPedidosReserva() {
+    return 1;
+  }
 
-  // simular() {
-  //   this.tiempo = this.tppr;
-  //   this.tppr = this.tiempoProximoPedidoReserva(this.tiempo, this.generarIntervaloPedidosReserva());
+  simular() {
+    this.tiempo = this.tppr;
+    this.tppr = this.tiempoProximoPedidoReserva(
+      this.tiempo,
+      this.generarIntervaloPedidosReserva()
+    );
 
-  //   this.cantidadPersonas = this.generarCantidadPersonas();
-  //   this.tiempoEstadia = this.generarTiempoEstadia();
-  //   this.fechaReserva = this.calcularFechaReserva(
-  //     this.tiempo,
-  //     this.generarTiempoAnticipacionReserva()
-  //   );
+    this.cantidadPersonas = this.generarCantidadPersonas();
+    this.tiempoEstadia = this.generarTiempoEstadia();
+    this.fechaReserva = this.calcularFechaReserva(
+      this.tiempo,
+      this.generarTiempoAnticipacionReserva()
+    );
 
-  // for(let i=0; i<this.i; i++){
-  //   for(let k=0; k <this.tiempoEstadia && this.disponibilidad; k++){
-  //     for(let j=0; j<this.n; j++){
+    // for(let i=0; i<this.i; i++){
+    //   for(let k=0; k <this.tiempoEstadia && this.disponibilidad; k++){
+    //     for(let j=0; j<this.n; j++){
 
-  //       }
-  //     }
-  //   }
-  // }
-
-  // }
-
-}  
-
+    //       }
+    //     }
+    //   }
+    // }
+  }
+}
