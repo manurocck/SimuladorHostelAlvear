@@ -13,16 +13,13 @@ export class InicioComponent implements OnInit {
   i = 11; // leer desde input
   j = 11; // leer desde input
   n = 11; // leer desde input
-  //habitaciones: Habitacion[] = [new Habitacion(numeroHabitacion=1, numeroCamas=4), 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  habitaciones: any = this.distribuirCamas([1, 4, 6, 7, 8]);
   disponibilidad = true;
   camasLibres = 0;
   precioHabitacion = 10;
   precioTotal = 0;
   fechaReserva = 0;
-  // oc: any[][] = [
-  //   [this.habitaciones],
-  //   [this.fechaReserva],
-  // ];
+  oc: any[][] = [[this.habitaciones], [this.fechaReserva]];
   cantidadPersonas = 0;
   tiempoEstadia: number = 0;
   tiempoAnticipadoReserva: number = 0;
@@ -33,12 +30,25 @@ export class InicioComponent implements OnInit {
   // }
 
   //  class Cama{
-  //   
+  //
   //   ocupada =false;
   //   constructor(public numeroCama:number){
   //}
   // }
+  distribuirCamas(camasPorHabitacion: number[]) {
+    //recibo por input del usuario una lista de cantidad de camas por habitacion
 
+    //let camasPorHabitacion: number[] = [1, 4, 6, 7, 8];
+
+    for (let i = 0; i < 11; i++) {
+      for (let j = 0; j < camasPorHabitacion[j]; i++) {
+        var camas: Cama[];
+        camas[j] = new Cama(j);
+      }
+      var habitacion: Habitacion[];
+      habitaciones[i] = new Habitacion(i, camas);
+    }
+  }
   generarCantidadPersonas() {
     return 1;
   }
