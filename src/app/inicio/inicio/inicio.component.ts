@@ -10,7 +10,7 @@ export class InicioComponent implements OnInit {
   constructor() { }
 
   cantidadCamas(){
-    return 200000;
+    return 100000000;
   }
 
   ngOnInit(): void {
