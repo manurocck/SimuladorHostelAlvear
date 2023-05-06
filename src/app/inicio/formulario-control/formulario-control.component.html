@@ -4,13 +4,15 @@
         <div class="ui divider"></div>
         <table class="ui celled table center aligned">
             <tbody>
-                <tr *ngFor="let n of habitaciones">
+                <tr *ngFor="let hab of habitaciones">
                     <td class="fw-bold col-4 px-5">
-                        <i class="bed icon"></i> Habitación {{n}}
+                        <i class="bed icon"></i> Habitación {{hab.num}}
                     </td>
                     <td>
                         <div class="ui input">
-                            <input type="text" placeholder="Cantidad de camas">
+                            <input #cantidad type="number" placeholder="habitaciones[1]"
+
+                            (keyup)="distribuirCamas(hab.num , cantidad.value)">
                         </div>
                     </td>
                 </tr>

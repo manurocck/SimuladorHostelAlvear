@@ -1,5 +1,5 @@
-import { NumberSymbol } from '@angular/common';
 import { Component, Input, OnInit, Output } from '@angular/core';
+import { Cama, Habitacion } from 'src/app/structs/habitacion';
 import { EventEmitter } from 'stream';
 
 @Component({
@@ -9,13 +9,26 @@ import { EventEmitter } from 'stream';
 })
 export class FormularioControlComponent implements OnInit {
 
-  @Input() habitaciones : number[]=[];
-  @Output() submit = new EventEmitter();
+  @Input() habitaciones : Habitacion[]=[];
+  camasPorHabitacion : string[] = [];
 
   constructor() { }
+  
+  mostrar(){
+    console.log(this.camasPorHabitacion);
+    console.log(this.habitaciones);
+  }
+  
+  asignarCamas(numHab : number, cantCamas : string) {
+    let numCamas = parseInt(cantCamas);
+    this.habitaciones[numHab-1].camas = [];
 
-  comenzarSimulacion(){
-    return this.submit.emit("submit", 4, 6, 1);
+    for (let j = 0; j < numCamas; j++) {
+      let cama = {id : 200+j, ocupada: false};
+      this.habitaciones[numHab-1].camas.push(cama);
+    }
+      
+    console.log(this.habitaciones);
   }
 
   ngOnInit(): void {

@@ -21,6 +21,8 @@
     "bootstrap": "^5.2.3",
     "rxjs": "~7.5.0",
     "semantic-ui-css": "^2.5.0",
+    "stream": "^0.0.2",
+    "timers": "^0.1.1",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
