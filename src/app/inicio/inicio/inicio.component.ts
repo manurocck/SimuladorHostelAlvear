@@ -8,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 export class InicioComponent implements OnInit {
   ngOnInit(): void {}
   tiempo = 0;
-  tppr = 0;
+  tiempoProximoPedidoReserva = 0;
   ipr = 0;
   i = 11; // leer desde input
   j = 11; // leer desde input
@@ -63,7 +63,7 @@ export class InicioComponent implements OnInit {
     return precio + cantidadPersonas * this.precioHabitacion * tiempoEstadia;
   }
 
-  tiempoProximoPedidoReserva(tiempo: number, ipr: number) {
+  calcularTiempoProximoPedidoReserva(tiempo: number, ipr: number) {
     return tiempo + ipr;
   }
 
@@ -78,8 +78,8 @@ export class InicioComponent implements OnInit {
   }
 
   simular() {
-    this.tiempo = this.tppr;
-    this.tppr = this.tiempoProximoPedidoReserva(
+    this.tiempo = this.tiempoProximoPedidoReserva;
+    this.tiempoProximoPedidoReserva = this.calcularTiempoProximoPedidoReserva(
       this.tiempo,
       this.generarIntervaloPedidosReserva()
     );
