@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-
+import { Cama } from '../../clases/cama';
+import { Habitacion } from '../../clases/habitacion';
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.component.html',
@@ -10,10 +11,10 @@ export class InicioComponent implements OnInit {
   tiempo = 0;
   tiempoProximoPedidoReserva = 0;
   ipr = 0;
-  i = 11; // leer desde input
-  j = 11; // leer desde input
-  n = 11; // leer desde input
-  habitaciones: any = this.distribuirCamas([1, 4, 6, 7, 8]);
+  //i = 11; // leer desde input
+  //j:number = 11; // leer desde input
+  //n = 11; // leer desde input
+  habitaciones: Habitacion[] = [];
   disponibilidad = true;
   camasLibres = 0;
   precioHabitacion = 10;
@@ -24,29 +25,17 @@ export class InicioComponent implements OnInit {
   tiempoEstadia: number = 0;
   tiempoAnticipadoReserva: number = 0;
 
-  // class Habitacion {
-  // numeroHabitacion: number=0;
-  // camas: Camas[];
-  // }
-
-  //  class Cama{
-  //
-  //   ocupada =false;
-  //   constructor(public numeroCama:number){
-  //}
-  // }
+  
   distribuirCamas(camasPorHabitacion: number[]) {
     //recibo por input del usuario una lista de cantidad de camas por habitacion
 
-    //let camasPorHabitacion: number[] = [1, 4, 6, 7, 8];
-
     for (let i = 0; i < 11; i++) {
-      for (let j = 0; j < camasPorHabitacion[j]; i++) {
-        var camas: Cama[];
+      var camas: Array<Cama> = [];
+      for (let j = 0; j < camasPorHabitacion[j]; j++) {
         camas[j] = new Cama(j);
       }
-      var habitacion: Habitacion[];
-      habitaciones[i] = new Habitacion(i, camas);
+
+      this.habitaciones[i] = new Habitacion(i, camas);
     }
   }
   generarCantidadPersonas() {
@@ -71,7 +60,7 @@ export class InicioComponent implements OnInit {
     return tiempo + tar;
   }
 
-  // constructor() {}
+   constructor() {}
 
   generarIntervaloPedidosReserva() {
     return 1;
@@ -91,8 +80,8 @@ export class InicioComponent implements OnInit {
       this.generarTiempoAnticipacionReserva()
     );
 
-    // for(let i=0; i<this.i; i++){
-    //   for(let k=0; k <this.tiempoEstadia && this.disponibilidad; k++){
+    // for(let i=0; i < this.i; i++){
+    //   for(let k=0; k < this.tiempoEstadia && this.disponibilidad; k++){
     //     for(let j=0; j<this.n; j++){
 
     //       }
