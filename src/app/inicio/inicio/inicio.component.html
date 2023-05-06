@@ -1,23 +1,14 @@
-<div class="ui centered grid">
-    <div class="ui row">
-        <div class="ui eight wide column">
-            <h1 class="ui header">Hostel Alvear</h1>
-            <h2 class="ui header">Simulación de Polimorfismo del Hostel</h2>
-            <div class="ui segment">
-                <table class="ui celled table">
-                    <thead>
-                        <tr>
-                            <th>Cantidad Camas</th>
-                            <th>Habitación</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td> hab </td>
-                            <td> {{cantidadCamas()}} </td>
-                        </tr>
-                    </tbody>
-                </table>
+<div class="body">
+    <div class="header-container">
+        <div class="ui container">
+            <h1 class="ui header display-1 fw-bolder">Hostel Alvear</h1>
+            <h2 class="ui header">Simulación de Polimorfismo <br> de habitaciones</h2>
+        </div>
+    </div>
+    <div class="ui center aligned container pb-5">
+        <div class="ui row justify-content-center formulario">
+            <div class="col">
+                <app-formulario-control [habitaciones]="habitaciones"></app-formulario-control>
             </div>
         </div>
     </div>

@@ -7,7 +7,11 @@ import { Component, OnInit } from '@angular/core';
 })
 export class InicioComponent implements OnInit {
 
+  habitaciones=[1,2,3,4,5,7,8,9,10,11];
+  
   constructor() { }
+
+  guardar(nums:Number[]){}
 
   cantidadCamas(){
     return 5;

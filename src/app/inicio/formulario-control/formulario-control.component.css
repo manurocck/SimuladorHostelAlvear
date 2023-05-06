@@ -1,0 +1,25 @@
+
+.ui.segment{
+    background-color: #5D7963;
+    color:white;
+    text-align: -webkit-center;
+    
+    width: 70%;
+}
+@media only screen and (max-width: 450px) {
+    .ui.segment{
+        width: 100%;
+    }    
+}
+
+.body{
+    text-align: -webkit-center;
+}
+
+td{
+    vertical-align: middle;
+}
+
+.ui.table{
+    width:fit-content;
+}

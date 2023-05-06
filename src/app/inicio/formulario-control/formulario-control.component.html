@@ -1,0 +1,25 @@
+<div class="body">
+    <div class="ui segment w-100-sm">
+        <h2 class="fw-bold">Completar los valores</h2>
+        <div class="ui divider"></div>
+        <table class="ui celled table center aligned">
+            <tbody>
+                <tr *ngFor="let n of habitaciones">
+                    <td class="fw-bold col-4 px-5">
+                        <i class="bed icon"></i> Habitación {{n}}
+                    </td>
+                    <td>
+                        <div class="ui input">
+                            <input type="text" placeholder="Cantidad de camas">
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="ui center aligned container">
+            <div class="ui huge secondary button">
+                Simular
+            </div>
+        </div>
+    </div>
+</div>
