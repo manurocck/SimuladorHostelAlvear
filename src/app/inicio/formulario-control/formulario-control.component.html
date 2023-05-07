@@ -4,22 +4,21 @@
         <div class="ui divider"></div>
         <table class="ui celled table center aligned">
             <tbody>
-                <tr *ngFor="let hab of habitaciones">
+                <tr *ngFor="let hab of habs">
                     <td class="fw-bold col-4 px-5">
                         <i class="bed icon"></i> Habitación {{hab.num}}
                     </td>
                     <td>
                         <div class="ui input">
-                            <input #cantidad type="number" placeholder="habitaciones[1]"
-
-                            (keyup)="distribuirCamas(hab.num , cantidad.value)">
+                            <input #cantidad type="number" placeholder="Cantidad de camas"
+                            (keyup)="asignarCamas(hab.num , cantidad.value)">
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
         <div class="ui center aligned container">
-            <div class="ui huge secondary button">
+            <div class="ui huge secondary button" (click)="submitControl()">
                 Simular
             </div>
         </div>

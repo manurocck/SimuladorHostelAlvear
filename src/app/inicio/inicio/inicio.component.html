@@ -8,8 +8,15 @@
     <div class="ui center aligned container pb-5">
         <div class="ui row justify-content-center formulario">
             <div class="col">
-                <app-formulario-control [habitaciones]="habitaciones"></app-formulario-control>
-                <app-mostrar-resultados></app-mostrar-resultados>
+                
+                <app-formulario-control *ngIf="!simulando" [habs]="habitaciones" (submitHabitaciones)="simular()"></app-formulario-control> 
+            
+                <div class="text-white" *ngFor="let reserva of reservas">
+                    <p>
+                        {{reserva | json}}
+                    </p>
+                </div>
+                
             </div>
         </div>
     </div>

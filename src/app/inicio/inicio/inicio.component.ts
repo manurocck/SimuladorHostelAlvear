@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Cama, Habitacion } from '../../structs/habitacion';
+import { Cama, Habitacion, Reserva } from '../../structs/habitacion';
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.component.html',
@@ -7,119 +7,126 @@ import { Cama, Habitacion } from '../../structs/habitacion';
 })
 
 export class InicioComponent implements OnInit {
-  ngOnInit(): void {
-    this.inicializarHabitaciones(11);
-  }
-
   constructor() {}
 
-  precioHabitacion  = 10;
-  totalHabitaciones = 11;
+  ngOnInit(): void {
+    this.inicializar();
+  }
+  
+  precioCama  = 10;
+  totalHabitaciones = 2;
   habitaciones: Habitacion[] = [];
 
   tiempo = 0;
-  tiempoFinal = 90;
-  tiempoProximoPedidoReserva = 0;
+  tiempoFinal = 40;
+  tiempoProximoPedidoReserva = 2;
   
   disponibilidad = true;
+  simulando = false;
 
-  precioTotal = 0;
+  dineroTotalRechazados = 0;
 
-  oc: any[][] = [];
+  // vector estado
+  reservas : Reserva[] = [];
 
-  distribuirCamas(camasPorHabitacion: number[]) {
-    //recibo por input del usuario una lista de cantidad de camas por habitacion
-
-    for (let i = 0; i < this.totalHabitaciones; i++) {
-      var camas: Array<Cama> = [];
-      for (let j = 0; j < camasPorHabitacion[j]; j++) {
-        camas[j] = { id: j, ocupada: false };
-      }
-
-      this.habitaciones[i] = {num: i, camas : camas};
-    }
-  }
 
   //generarTiempoProximoPedidoReserva() {return 1;}
   generarCantidadPersonas() {
-    return 1;
+    return 3;
   }
   generarTiempoEstadia() {
-    return 1;
+    return 5;
   }
   generarTiempoAnticipacionReserva() {
-    return 1;
+    return 4;
   }
   generarIntervaloPedidosReserva() {
     return 1;
   }
 
-  calcularPrecio(
-    precio: number,
-    cantidadPersonas: number,
-    tiempoEstadia: number
-  ) {
-    return precio + cantidadPersonas * this.precioHabitacion * tiempoEstadia;
+  mostrar(){
+    return this.reservas;
   }
 
-  calcularTiempoProximoPedidoReserva(tiempo: number, ipr: number) {
-    return tiempo + ipr;
+  calcularPrecio( cantidadPersonas: number, tiempoEstadia: number ) {
+    // definir precio fijo por persona
+    return this.precioCama * cantidadPersonas * tiempoEstadia;
   }
 
-  calcularFechaReserva(tiempo: number, tiempoAnticipadoReserva: number) {
-    return tiempo + tiempoAnticipadoReserva;
-  }
-  inicializarHabitaciones(cantidad : number){
-    for(let i = 0; i<cantidad; i++){
+
+  inicializar(){
+    for(let i = 0; i<this.totalHabitaciones; i++){
       this.habitaciones[i] =
         { num: i+1, 
           camas :[] 
         };
     }
+
+    for(let i = 0 ; i<90 ; i++){
+      this.habitaciones.forEach( h => this.reservas.push( {habitacion : h, fecha: i} ))
+    }
   }
 
   simular() {  
+    this.inicializar();
+    
+    this.simulando = true;
 
-    this.inicializarHabitaciones(11);
-
-    while (this.tiempo <= this.tiempoFinal) {
+    //while (this.tiempo <= this.tiempoFinal) {
       this.tiempo = this.tiempoProximoPedidoReserva; //ver como generar el primer tppr
-      this.tiempoProximoPedidoReserva = this.calcularTiempoProximoPedidoReserva(
-        this.tiempo,
-        this.generarIntervaloPedidosReserva()
-      );
+      
+      this.tiempoProximoPedidoReserva = this.tiempo + this.generarIntervaloPedidosReserva();
 
       let cantidadPersonas = this.generarCantidadPersonas();
       let tiempoEstadia    = this.generarTiempoEstadia();
-      let fechaReserva     = this.calcularFechaReserva(
-        this.tiempo,
-        this.generarTiempoAnticipacionReserva()
-      );
 
-      for (var i = 0; i < this.totalHabitaciones; i++) {
-        let n = this.habitaciones[i].camas.length; //filtrar camas libres
-        for (let k = 0; k < tiempoEstadia && this.disponibilidad; k++) {
+      let i = 0;
+
+      for (i ; i < this.habitaciones.length ; i++) { // iteración por habitación
+        let n = this.habitaciones[i].camas.length;
+        
+        for (let k = 0; k < tiempoEstadia && this.disponibilidad; k++) { // iteración por fecha de estadía
           let camasLibres = 0;
 
-          for (let j = 0; j < n; j++) {
-            camasLibres = this.habitaciones[i].camas[j].ocupada
-              ? camasLibres
-              : camasLibres + 1;
+          for (let j = 0; j < n; j++) { // iteración por camas de habitación [i]
+            camasLibres = this.habitaciones[i].camas[j].disponible
+              ? camasLibres + 1
+              : camasLibres;
           }
-          if (camasLibres >= cantidadPersonas) {
-          } else {
-            this.disponibilidad = false;
-          }
+
+          if (camasLibres < cantidadPersonas) this.disponibilidad = false;
         }
       }
-      if ((i = 11)) {
-        this.precioTotal = this.calcularPrecio(
-           10, // precio fijo en dólares
-           cantidadPersonas,
-           tiempoEstadia
-        );
-      } else {
-      }
-    }
+
+      if ((i = 11)) this.dineroTotalRechazados = this.calcularPrecio( cantidadPersonas, tiempoEstadia);
+
+
+      else{ // actualizar vector estado
+        let fechaReserva = this.generarTiempoAnticipacionReserva() + this.tiempo;
+        
+        // habitacion i
+        for(let j = 0; j<tiempoEstadia ; j++){
+ 
+          let habitacionEnFecha = this.reservas.filter( r => r.fecha == fechaReserva && r.habitacion.num == i).map(r => r.habitacion);
+          
+          for( let j = 0 ; j < this.reservas.length ; j++){ 
+            if( this.reservas[j].fecha == fechaReserva){
+              if(this.reservas[j].habitacion.num == i){
+                let camasAsignadas = 0;
+                for( let k = 0 ; k < this.reservas[j].habitacion.camas.length ; k++){
+                  if(this.reservas[j].habitacion.camas[k].disponible && camasAsignadas<cantidadPersonas){
+                     this.reservas[j].habitacion.camas[k].disponible = false; 
+                    camasAsignadas++;
+                  }
+                } 
+                j = this.reservas.length; // para que deje de iterar
+              }
+            }
+          }
+        }
+      }    
+      
+
+    //}
   }
 }

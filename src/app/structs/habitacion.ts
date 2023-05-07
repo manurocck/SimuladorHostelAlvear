@@ -5,6 +5,10 @@ export interface Habitacion{
 
 export interface Cama {
   id : number,
-  ocupada: boolean
+  disponible: boolean
 }
  
+export interface Reserva{
+  habitacion : Habitacion,
+  fecha: number
+}
