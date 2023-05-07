@@ -13,25 +13,80 @@ export class ScatteredChartComponent {
   inicializar(){
     this.scatterChartData.datasets = [];
     
-    console.log("Recibiendo datasets camas libres: ", this.camasLibres);
-
-    this.scatterChartData.datasets.push({
-      data: this.camasLibres.map( (c):Point => ({ x: c.x, y: c.y }) ),
-      label: 'Libre',
-      backgroundColor: 'rgb(93, 121, 99)',
-      pointRadius: 10
-    });
-    this.scatterChartData.datasets.push({
-      data: this.camasOcupadas.sort( (a,b) => a.x-b.x).filter(a=> a.x<10),
-      label: 'Ocupado',
-      backgroundColor: 'rgb(176, 48, 96)',
-      pointRadius: 10
-    })
+    // console.log("Recibiendo datasets camas libres: ", this.camasLibres);
 
     this.camasLibres  .filter(r => r.x == 0).map(r => this.etiquetas.push(r.y.toString()));
     this.camasOcupadas.filter(r => r.x == 0).map(r => this.etiquetas.push(r.y.toString()));
-
+    // console.log("Etiquetas : ",this.etiquetas);
+    
+    this.habitaciones = this.removeDuplicates(this.etiquetas);
+    
+    // console.log("Habitaciones : ",this.habitaciones);
   }
+
+  habitaciones : number[] = [];
+
+  removeDuplicates(arr : string[]) {
+    let unique:number[] = [];
+
+    arr.forEach(e => {
+        if (!unique.includes(this.etiquetaAHabitacion(e))) {
+            unique.push(this.etiquetaAHabitacion(e));
+        }
+    });
+    return unique;
+  }
+
+  etiquetaAHabitacion( etiqueta : string){
+    let indiceHabitacion = Math.round(parseInt(etiqueta)/100);
+
+    return indiceHabitacion;
+  }
+
+  dataSegunHabitacion( indice : number ){
+    var indiceChartData: ChartData<'scatter'> = {
+      labels: this.scatterChartLabels,
+      datasets: [
+        {
+          data: this.camasLibres.filter( xy => (xy.y >= indice * 100 && xy.y < (indice+1) * 100) ),
+          label: 'Libre',
+          backgroundColor: 'rgb(93, 121, 99)',
+          pointRadius: 4
+        },
+        {
+          data: this.camasOcupadas.filter( xy => (xy.y >= indice * 100 && xy.y < (indice+1) * 100) ),
+          label: 'Ocupados',
+          backgroundColor: 'rgb(176, 48, 96)',
+          pointRadius: 4
+        }
+      ]
+    };
+
+    return indiceChartData;
+  }
+
+  opcionesSegunHabitacion( indice : number){
+    var indiceChartOptions: ChartConfiguration['options'] = {
+      plugins:{
+        legend: {
+          display : false
+        }
+      },
+      responsive: true,
+      scales: {
+        x: {
+          min: 0,
+          max: 30
+        },
+        y: {
+          min : indice*100-1,
+          max : indice*100+6
+        }
+      }
+    };
+    return indiceChartOptions;
+  }
+
 
   etiquetas : string[] = [];     //  x : fecha, y : id
   @Input() camasLibres   : [ data : {x: number, y : number}] = [{x: 0, y : 0}];
@@ -47,9 +102,13 @@ export class ScatteredChartComponent {
     responsive: true,
     scales: {
       y: {
-        type: "category",
-        labels: this.etiquetas
+        min : 100,
+        max : 102
       }
+      // y: {
+      //   type: "category",
+      //   labels: this.etiquetas
+      // }
     }
   };
   public scatterChartLabels: string[] = [ ];
@@ -97,6 +156,6 @@ export class ScatteredChartComponent {
       })
     }
 
-    console.log(randoms);
+    // console.log(randoms);
   }
 }

@@ -1,5 +1,11 @@
-<canvas baseChart class="chart"
-        [data]="scatterChartData"
-        [options]="scatterChartOptions"
-        [type]="scatterChartType">
-</canvas>
+
+<div class="ui container" >
+        <div class="chart-container" *ngFor = "let hab of habitaciones">
+                <h1> Habitacion {{hab}}</h1>
+                <canvas baseChart class="chart"
+                [data]="dataSegunHabitacion( hab )"
+                [options]="opcionesSegunHabitacion( hab )"
+                [type]="scatterChartType">
+                </canvas>
+        </div>
+</div>

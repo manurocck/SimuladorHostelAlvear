@@ -53,9 +53,6 @@ export class InicioComponent implements OnInit {
     return 1;
   }
 
-  mostrar(){
-  }
-
   calcularPrecio( cantidadPersonas: number, tiempoEstadia: number ) {
     // definir precio fijo por persona
     return this.precioCama * cantidadPersonas * tiempoEstadia;
@@ -65,27 +62,6 @@ export class InicioComponent implements OnInit {
   camasLibres   : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
   camasOcupadas : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
 
-  setChart(){
-    this.camasLibres.pop();
-    this.camasOcupadas.pop();
-    
-    this.habitaciones.forEach( 
-      h => h.camas.forEach(
-        c => c.dias.forEach(
-          d => {
-            let data = {x: d.fecha, y : c.id}; 
-            if(d.estaDisponible) {
-              this.camasLibres.push(data);
-              console.log("Push cama libre con data ", data);
-            }
-            else {
-              this.camasOcupadas.push(data);
-              console.log("Push cama ocupada con data ", data);
-            }
-          }
-        )
-      ))
-  }
 
   simular() {
 
@@ -167,5 +143,28 @@ export class InicioComponent implements OnInit {
     this.setChart();
 
     //}
+  }
+
+  
+  setChart(){
+    this.camasLibres.pop();
+    this.camasOcupadas.pop();
+    
+    this.habitaciones.forEach( 
+      h => h.camas.forEach(
+        c => c.dias.forEach(
+          d => {
+            let data = {x: d.fecha, y : c.id}; 
+            if(d.estaDisponible) {
+              this.camasLibres.push(data);
+              // console.log("Push cama libre con data ", data);
+            }
+            else {
+              this.camasOcupadas.push(data);
+              // console.log("Push cama ocupada con data ", data);
+            }
+          }
+        )
+      ))
   }
 }

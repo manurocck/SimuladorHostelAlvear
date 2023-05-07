@@ -1,3 +1,16 @@
 canvas{
     background-color: white;
 }
+
+h1{
+    color: white;
+}
+
+.chart-container{
+    width : 50%;
+}
+
+.ui.container{
+    display: flex;
+    justify-content: space-around;
+}
