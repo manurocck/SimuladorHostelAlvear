@@ -26,7 +26,7 @@ export class InicioComponent implements OnInit {
 
   
   precioCama  = 10;
-  totalHabitaciones = 2;
+  totalHabitaciones = 4;
   habitaciones: Habitacion[] = [];
 
   tiempo = 0;
