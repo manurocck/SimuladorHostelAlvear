@@ -10,11 +10,28 @@
             <div class="col">
                 
                 <app-formulario-control *ngIf="!simulando" [habs]="habitaciones" (submitHabitaciones)="simular()"></app-formulario-control> 
-            
-                <div class="text-white" *ngFor="let reserva of reservas">
-                    <p>
-                        {{reserva | json}}
-                    </p>
+                
+                <scatter-chart class="centeraligned" *ngIf="simulando"
+                    [camasLibres]="camasLibres"
+                    [camasOcupadas]="camasOcupadas"></scatter-chart>
+                <div class="text-white" *ngFor="let hab of habitaciones">
+                    <h2>
+                        Habitación número {{hab.numId}} <br>
+                    </h2>
+                    <ng-container *ngFor="let c of hab.camas">
+                        <h3>
+                            Numero cama : {{c.id}} <br>
+                        </h3>
+                        <p>
+                        Ocupacion
+                        </p>
+                        <p>
+                        <ng-container *ngFor="let d of c.dias">
+                            Día : {{d.fecha}} está {{d.estaDisponible? "disponible": "reservado"}}<br>
+                        </ng-container>
+                        </p>
+                    </ng-container>
+                    <br>
                 </div>
                 
             </div>

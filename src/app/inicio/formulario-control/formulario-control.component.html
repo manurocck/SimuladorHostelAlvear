@@ -6,12 +6,12 @@
             <tbody>
                 <tr *ngFor="let hab of habs">
                     <td class="fw-bold col-4 px-5">
-                        <i class="bed icon"></i> Habitación {{hab.num}}
+                        <i class="bed icon"></i> Habitación {{hab.numId}}
                     </td>
                     <td>
                         <div class="ui input">
                             <input #cantidad type="number" placeholder="Cantidad de camas"
-                            (keyup)="asignarCamas(hab.num , cantidad.value)">
+                            (keyup)="asignarCamas(hab.numId , cantidad.value)">
                         </div>
                     </td>
                 </tr>

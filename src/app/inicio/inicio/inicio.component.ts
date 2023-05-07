@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Cama, Habitacion, Reserva } from '../../structs/habitacion';
+import { Habitacion, VectorEstado } from '../../structs/habitacion';
+
+
 @Component({
   selector: 'app-inicio',
   templateUrl: './inicio.component.html',
@@ -12,6 +14,16 @@ export class InicioComponent implements OnInit {
   ngOnInit(): void {
     this.inicializar();
   }
+
+  inicializar(){
+    for(let i = 0; i<this.totalHabitaciones; i++){
+      this.habitaciones[i] =
+        { numId: i+1, 
+          camas : [] 
+        };
+    }
+  }
+
   
   precioCama  = 10;
   totalHabitaciones = 2;
@@ -19,15 +31,12 @@ export class InicioComponent implements OnInit {
 
   tiempo = 0;
   tiempoFinal = 40;
-  tiempoProximoPedidoReserva = 2;
+  tiempoProximoPedidoReserva = 0;
   
-  disponibilidad = true;
+  hayDisponibilidad = true;
   simulando = false;
 
   dineroTotalRechazados = 0;
-
-  // vector estado
-  reservas : Reserva[] = [];
 
 
   //generarTiempoProximoPedidoReserva() {return 1;}
@@ -45,7 +54,6 @@ export class InicioComponent implements OnInit {
   }
 
   mostrar(){
-    return this.reservas;
   }
 
   calcularPrecio( cantidadPersonas: number, tiempoEstadia: number ) {
@@ -53,23 +61,34 @@ export class InicioComponent implements OnInit {
     return this.precioCama * cantidadPersonas * tiempoEstadia;
   }
 
+  
+  camasLibres   : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
+  camasOcupadas : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
 
-  inicializar(){
-    for(let i = 0; i<this.totalHabitaciones; i++){
-      this.habitaciones[i] =
-        { num: i+1, 
-          camas :[] 
-        };
-    }
-
-    for(let i = 0 ; i<90 ; i++){
-      this.habitaciones.forEach( h => this.reservas.push( {habitacion : h, fecha: i} ))
-    }
+  setChart(){
+    this.camasLibres.pop();
+    this.camasOcupadas.pop();
+    
+    this.habitaciones.forEach( 
+      h => h.camas.forEach(
+        c => c.dias.forEach(
+          d => {
+            let data = {x: d.fecha, y : c.id}; 
+            if(d.estaDisponible) {
+              this.camasLibres.push(data);
+              console.log("Push cama libre con data ", data);
+            }
+            else {
+              this.camasOcupadas.push(data);
+              console.log("Push cama ocupada con data ", data);
+            }
+          }
+        )
+      ))
   }
 
-  simular() {  
-    this.inicializar();
-    
+  simular() {
+
     this.simulando = true;
 
     //while (this.tiempo <= this.tiempoFinal) {
@@ -80,52 +99,72 @@ export class InicioComponent implements OnInit {
       let cantidadPersonas = this.generarCantidadPersonas();
       let tiempoEstadia    = this.generarTiempoEstadia();
 
-      let i = 0;
-
-      for (i ; i < this.habitaciones.length ; i++) { // iteración por habitación
-        let n = this.habitaciones[i].camas.length;
-        
-        for (let k = 0; k < tiempoEstadia && this.disponibilidad; k++) { // iteración por fecha de estadía
-          let camasLibres = 0;
-
-          for (let j = 0; j < n; j++) { // iteración por camas de habitación [i]
-            camasLibres = this.habitaciones[i].camas[j].disponible
-              ? camasLibres + 1
-              : camasLibres;
-          }
-
-          if (camasLibres < cantidadPersonas) this.disponibilidad = false;
-        }
-      }
-
-      if ((i = 11)) this.dineroTotalRechazados = this.calcularPrecio( cantidadPersonas, tiempoEstadia);
-
-
-      else{ // actualizar vector estado
-        let fechaReserva = this.generarTiempoAnticipacionReserva() + this.tiempo;
-        
-        // habitacion i
-        for(let j = 0; j<tiempoEstadia ; j++){
- 
-          let habitacionEnFecha = this.reservas.filter( r => r.fecha == fechaReserva && r.habitacion.num == i).map(r => r.habitacion);
-          
-          for( let j = 0 ; j < this.reservas.length ; j++){ 
-            if( this.reservas[j].fecha == fechaReserva){
-              if(this.reservas[j].habitacion.num == i){
-                let camasAsignadas = 0;
-                for( let k = 0 ; k < this.reservas[j].habitacion.camas.length ; k++){
-                  if(this.reservas[j].habitacion.camas[k].disponible && camasAsignadas<cantidadPersonas){
-                     this.reservas[j].habitacion.camas[k].disponible = false; 
-                    camasAsignadas++;
-                  }
-                } 
-                j = this.reservas.length; // para que deje de iterar
-              }
-            }
-          }
-        }
-      }    
+      let fechaReserva = this.generarTiempoAnticipacionReserva() + this.tiempo;
+      let i = 0;    
       
+      this.habitaciones.forEach( 
+        habitacion =>{
+          let camasMeSirven = 0;
+          habitacion.camas.forEach(  // Chequeo disponibilidad
+            cama => {
+              let diasLibre = 0;
+              
+              for(let f = fechaReserva ; f < fechaReserva+tiempoEstadia ; f++){
+                
+                if(cama.dias[f].estaDisponible) diasLibre++;
+              }
+              if(diasLibre >= tiempoEstadia) camasMeSirven++;
+            }
+          )
+
+          if(camasMeSirven >= cantidadPersonas) { // Asigno reserva
+
+            console.log("Reserva desde fecha : ", fechaReserva, " hasta : ", fechaReserva+tiempoEstadia);
+            console.log("Para : ", cantidadPersonas);
+
+            // Reserva : 
+            // 3 , 5 días
+
+            // Matriz inicial
+
+            // día        4 5 6 7 8
+            // cama 200 : 0 1 0 0 1
+            // cama 201 : 0 1 1 0 1 
+            // cama 202 : 1 0 0 1 0 
+            // cama 203 : 1 0 1 1 1 
+            // cama 204 : 1 1 1 1 0
+
+            // Matriz después de la reserva
+            
+            // día        4 5 6 7 8
+            // cama 200 : 0 1 0 0 1 ( marco 1 ) 
+            // cama 201 : 0 1 1 0 1 
+            // cama 202 : 0 0 0 1 0 
+            // cama 203 : 0 0 1 1 1 
+            // cama 204 : 1 1 1 1 0 
+            // cama 205 : 1 1 1 1 0 
+            
+            let c = 0;
+            for(let f = fechaReserva ; f<(tiempoEstadia+fechaReserva) ; f++){ //iteración por fecha
+              
+              var funcionaplis = 0;
+              
+              habitacion.camas.forEach(cama =>{
+                if(cama.dias[f].estaDisponible && funcionaplis<cantidadPersonas){
+                    cama.dias[f].estaDisponible = false;
+                    funcionaplis++;
+                  }
+                })
+              
+
+            }  
+          }
+          else{ console.log("Reserva rechazada por la habitacion ", habitacion.numId)}
+        }
+      );
+      
+      
+    this.setChart();
 
     //}
   }

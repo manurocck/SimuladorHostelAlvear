@@ -1,14 +1,22 @@
-export interface Habitacion{
-  num: number,
-  camas: Cama[]
+
+
+export interface VectorEstado {
+  habitaciones: Habitacion[];
+}
+
+export interface Habitacion {
+  numId: number;
+  camas: Cama[];
 }
 
 export interface Cama {
-  id : number,
-  disponible: boolean
+  id: number;
+  dias: Dia[];
 }
- 
-export interface Reserva{
-  habitacion : Habitacion,
-  fecha: number
+
+export interface Dia {
+  fecha: number;
+  estaDisponible: boolean;
 }
+
+

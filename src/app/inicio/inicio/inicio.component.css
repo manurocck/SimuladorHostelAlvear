@@ -38,3 +38,7 @@
     background-size:contain;
     background-repeat: no-repeat;
 }
+
+.centeraligned{
+    text-align: -webkit-center;
+}

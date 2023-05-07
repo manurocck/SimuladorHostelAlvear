@@ -5,6 +5,7 @@ import { InicioRoutingModule } from './inicio-routing.module';
 import { InicioComponent } from './inicio/inicio.component';
 import { FormularioControlComponent } from './formulario-control/formulario-control.component';
 import { MostrarResultadosComponent } from './mostrar-resultados/mostrar-resultados.component';
+import { WidgetsModule } from '../widgets/widgets.module';
 
 
 @NgModule({
@@ -15,6 +16,7 @@ import { MostrarResultadosComponent } from './mostrar-resultados/mostrar-resulta
   ],
   imports: [
     CommonModule,
+    WidgetsModule,
     InicioRoutingModule
   ]
 })
