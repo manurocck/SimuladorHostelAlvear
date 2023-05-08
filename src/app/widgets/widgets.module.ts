@@ -3,12 +3,16 @@ import { CommonModule } from '@angular/common';
 import { NgChartsModule } from 'ng2-charts';
 
 import { WidgetsRoutingModule } from './widgets-routing.module';
-import { ScatteredChartComponent } from './scattered-chart/scattered-chart.component';
+import { ChartHabitacion } from './chart-habitacion/chart-habitacion.component';
+import { ModalComponent } from './modal/modal.component';
+import { ClockComponent } from './clock/clock.component';
 
 
 @NgModule({
   declarations: [
-    ScatteredChartComponent
+    ChartHabitacion,
+    ModalComponent,
+    ClockComponent
   ],
   imports: [
     CommonModule,
@@ -16,7 +20,7 @@ import { ScatteredChartComponent } from './scattered-chart/scattered-chart.compo
     WidgetsRoutingModule
   ],
   exports: [
-    ScatteredChartComponent
+    ChartHabitacion
   ]
 })
 export class WidgetsModule { }

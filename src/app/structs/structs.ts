@@ -1,9 +1,5 @@
 
 
-export interface VectorEstado {
-  habitaciones: Habitacion[];
-}
-
 export interface Habitacion {
   numId: number;
   camas: Cama[];

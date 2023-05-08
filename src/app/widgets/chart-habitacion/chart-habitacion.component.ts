@@ -1,12 +1,12 @@
 import { Component, Input } from '@angular/core';
-import { ChartConfiguration, ChartData, ChartDataset, ChartEvent, ChartType, Point } from 'chart.js';
+import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
 
 @Component({
-  selector: 'scatter-chart',
-  templateUrl: './scattered-chart.component.html',
-  styleUrls: [ './scattered-chart.component.css' ]
+  selector: 'chart-habitacion',
+  templateUrl: './chart-habitacion.component.html',
+  styleUrls: [ './chart-habitacion.component.css' ]
 })
-export class ScatteredChartComponent {  
+export class ChartHabitacion {  
   habitaciones : number[] = []; // Array contenedor de todas las camas sin repetidos
   etiquetas    : string[] = []; // Array contenedor de todas las camas  
 
@@ -66,20 +66,32 @@ export class ScatteredChartComponent {
       plugins:{
         legend: {
           // display : false // Para ocultar las etiquetas de libre y ocupado
-          position : 'bottom'
+          position : 'bottom',
         }
       },
       animation: false,
       responsive: true,
       scales: {
         x: {
-          min: this.tiempo,
-          max: 30+this.tiempo
+          min: Math.round(this.tiempo)-5,
+          max: 20+Math.round(this.tiempo),
+          title: {
+            text: 'Fecha (día)',
+            display: true
+          },
         },
         y: {
           min : indice*100-1,
           max : indice*100+contarCamas,
+          title: {
+            text: 'Cama',
+            display: true
+          },
           ticks : {
+            callback: function(value, index, ticks) {
+              let text = (value==indice*100-1 || value == indice*100+contarCamas)? '' : value.toString();
+              return text;
+            },
             stepSize : 1
           }
         }

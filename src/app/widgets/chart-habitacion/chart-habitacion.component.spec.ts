@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScatteredChartComponent } from './scattered-chart.component';
+import { ChartHabitacion } from './chart-habitacion.component';
 
 describe('ScatteredChartComponent', () => {
-  let component: ScatteredChartComponent;
-  let fixture: ComponentFixture<ScatteredChartComponent>;
+  let component: ChartHabitacion;
+  let fixture: ComponentFixture<ChartHabitacion>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScatteredChartComponent ]
+      declarations: [ ChartHabitacion ]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ScatteredChartComponent);
+    fixture = TestBed.createComponent(ChartHabitacion);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

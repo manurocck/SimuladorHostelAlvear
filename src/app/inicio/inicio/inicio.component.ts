@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { Cama, Habitacion, VectorEstado } from '../../structs/habitacion';
+import { Habitacion } from '../../structs/structs';
 
+const sleep = (ms:number) => new Promise(r => setTimeout(r, ms));
 
 @Component({
   selector: 'app-inicio',
@@ -19,26 +20,28 @@ export class InicioComponent implements OnInit {
     for(let i = 0; i<this.totalHabitaciones; i++){
       this.habitaciones[i] =
         { numId: i+1, 
-          camas : [] 
+          camas : []
         };
     }
   }
-
-  
-  precioCama  = 10;
-  totalHabitaciones = 4;
+  // VECTOR ESTADO
   habitaciones: Habitacion[] = [];
 
+  // CONDICIONES INICIALES DEL MODELO
+  precioCama  = 10;
+  totalHabitaciones = 11;
+
   tiempo = 0;
-  tiempoFinal = 40;
+  tiempoFinal = 40*24;
   tiempoProximoPedidoReserva = 0;
+  dineroTotalRechazados = 0;
   
+  // FLAGS
   hayDisponibilidad = true;
   simulando = false;
 
-  dineroTotalRechazados = 0;
-
-  generarCantidadPersonas() { // respor el método del rechazo
+  // DATOS PARA GENERAR
+  generarCantidadPersonas() { // por el método del rechazo
     let max = this.distLogaritmica(1);
     
     let rand1 = Math.random();
@@ -53,15 +56,35 @@ export class InicioComponent implements OnInit {
     return Math.round(x);
   }
 
-
-  generarTiempoEstadia() {
+  generarTiempoEstadia() { // por el método de la función inversa
     return this.inverseGaussian();
   }
-  generarTiempoAnticipacionReserva() {
-    return this.randJohnson() * 30;
+
+  generarIntervaloPedidosReserva() { // probabilidad uniforme de ocurrencia
+    let posibilidades = [0.5,1,2];
+    let indiceRandom = Math.floor(( (Math.random()+1)*100)%3);
+    
+    return posibilidades[indiceRandom];
   }
-  generarIntervaloPedidosReserva() {
-    return 1;
+  
+  // ARREGLAR ESTO
+  generarTiempoAnticipacionReserva() { // probabilidad uniforme de ocurrencia
+    let posibilidades = [0
+                        ,1,1
+                        ,2,2,2,2
+                        ,3,3,3,3,3,3
+                        ,4,4,4,4,4,4,4
+                        ,5,5,5,5,5
+                        ,6,6,6,6
+                        ,7,7,7
+                        ,8,8,8
+                        ,9,9,9
+                        ,10
+                        ,11];
+
+    let indiceRandom = Math.floor(( (Math.random()+1)*100)%3);
+
+    return posibilidades[indiceRandom];
   }
 
   calcularPrecio( cantidadPersonas: number, tiempoEstadia: number ) {
@@ -69,37 +92,36 @@ export class InicioComponent implements OnInit {
     return this.precioCama * cantidadPersonas * tiempoEstadia;
   }
 
-  
-  camasLibres   : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
-  camasOcupadas : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
-
-
-  simular() {
-    console.log("<> Valores de la distribución logarítmica");
-    let acumulacion = 0;
-    for(let i = 1 ; i<7; i++){
-      console.log("<> En ",i,':', this.distLogaritmica(i));
-      acumulacion += this.distLogaritmica(i);
-    }
-    console.log("Acumulación de probabilidad : ", acumulacion);
-
+  async simular() {
     this.simulando = true;
 
     while (this.tiempo <= this.tiempoFinal) {
-      this.tiempo = this.tiempoProximoPedidoReserva; //ver como generar el primer tppr
+      // [tiempo] = [horas]
+      this.tiempo = this.tiempoProximoPedidoReserva; 
+      console.log("Entró un pedido a las :",this.tiempoProximoPedidoReserva%24,'horas');
       
+      // Se atiende de 7 a 23 hs
       this.tiempoProximoPedidoReserva = this.tiempo + this.generarIntervaloPedidosReserva();
+      console.log("El próximo pedido será a las :",this.tiempoProximoPedidoReserva%24,'horas');
+      if(this.tiempoProximoPedidoReserva%24 < 7){
+        this.tiempoProximoPedidoReserva -= (this.tiempoProximoPedidoReserva%24); 
+        this.tiempoProximoPedidoReserva += 7;
+        console.log("El horario de atención es de 7 a 24hs. Será atendido a las : ",this.tiempoProximoPedidoReserva%24,'horas');
+        
+      } 
 
       let cantidadPersonas = this.generarCantidadPersonas();
-      let tiempoEstadia    = this.generarTiempoEstadia();
+      let diasEstadia    = this.generarTiempoEstadia();
+      let diasAnticipacion = this.generarTiempoAnticipacionReserva();
 
-      let fechaReserva = this.generarTiempoAnticipacionReserva() + this.tiempo;
-      let i = 0;   
+      let fechaReserva = Math.floor(this.tiempo/24) + diasAnticipacion;
       let reservaAceptada = false; 
 
       console.log(">>>> SE GENERA UNA NUEVA RESERVA");
-      console.log("Desde el ", fechaReserva, " hasta el ", fechaReserva+tiempoEstadia, "para ", cantidadPersonas, " personas");
-      console.log(tiempoEstadia, (tiempoEstadia==1)?' noche':' noches');
+      // console.log("Desde el ", fechaReserva, " hasta el ", fechaReserva+tiempoEstadia, "para ", cantidadPersonas, " personas");
+      
+      console.log("Con", diasAnticipacion,(diasAnticipacion==1)?'dia':'dias'," de anticipación");
+      console.log("Por", diasEstadia,(diasEstadia==1)?'noche':'noches');
 
       this.habitaciones.forEach( 
         habitacion =>{
@@ -109,11 +131,11 @@ export class InicioComponent implements OnInit {
               cama => {
                 let diasLibre = 0;
                 
-                for(let f = fechaReserva ; f < fechaReserva+tiempoEstadia ; f++){
+                for(let f = fechaReserva ; f < fechaReserva+diasEstadia ; f++){
                   
                   if(cama.dias[f].estaDisponible) diasLibre++;
                 }
-                if(diasLibre >= tiempoEstadia) camasMeSirven++;
+                if(diasLibre >= diasEstadia) camasMeSirven++;
               }
             )
 
@@ -123,7 +145,7 @@ export class InicioComponent implements OnInit {
               let cantCamas = habitacion.camas.length;
               let camasAsignadas = 0;
       
-              for(let f = fechaReserva ; f<(tiempoEstadia+fechaReserva) ; f++){ //iteración por fecha
+              for(let f = fechaReserva ; f<(diasEstadia+fechaReserva) ; f++){ //iteración por fecha
                 camasAsignadas = 0;
                 for(let c = 0; c<cantCamas ; c++){
                   // Marcar como no disponible CP cantidad de camas en la fecha F
@@ -154,7 +176,8 @@ export class InicioComponent implements OnInit {
         }
       );
       
-      console.log(">>>> FIN EVENTO. Tiempo actual : ", this.tiempo);
+      await sleep(100);
+      // console.log(">>>> FIN EVENTO. Tiempo actual : ", this.tiempo);
     }
   }
 
@@ -178,6 +201,15 @@ export class InicioComponent implements OnInit {
   distLogaritmica( x : number){
     let theeta = 0.45978;
     let resultado = ( (-1) / Math.log (1-theeta) ) * ( ( (theeta)**(x)) / x );
+
+    // Para debuguear
+    // console.log("<> Valores de la distribución logarítmica");
+    // let acumulacion = 0;
+    // for(let i = 1 ; i<7; i++){
+    //   console.log("<> En ",i,':', this.distLogaritmica(i));
+    //   acumulacion += this.distLogaritmica(i);
+    // }
+    // console.log("Acumulación de probabilidad : ", acumulacion);
 
     // funcion de acumulación 
     // if(x>1)
@@ -208,6 +240,9 @@ export class InicioComponent implements OnInit {
     else return Math.ceil((mu * mu) / x);
   }
 
+  // CHART HABITACIONES
+  camasLibres   : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
+  camasOcupadas : [data:{ x: number , y: number }] = [{x:0,y:0}]; // idcama, fecha
   // inicializar gráfico
   inicializarChart(){
     this.simulando = true;
@@ -221,11 +256,9 @@ export class InicioComponent implements OnInit {
             let data = {x: d.fecha, y : c.id}; 
             if(d.estaDisponible) {
               this.camasLibres.push(data);
-              // console.log("Push cama libre con data ", data);
             }
             else {
               this.camasOcupadas.push(data);
-              // console.log("Push cama ocupada con data ", data);
             }
           }
         )

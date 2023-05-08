@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Cama, Dia, Habitacion } from 'src/app/structs/habitacion';
+import { Cama, Dia, Habitacion } from 'src/app/structs/structs';
 
 
 @Component({
@@ -12,9 +12,13 @@ export class FormularioControlComponent implements OnInit {
   @Input() habs : Habitacion[]=[];
   @Output() submitHabitaciones : EventEmitter<Habitacion[]> = new EventEmitter<Habitacion[]>();
 
-  camasPorHabitacion : string[] = [];
-
   constructor() { }
+
+  autocompletar(){
+    let defaults = ['4','6','2','6','6','0','2','1','1','2','4'];
+
+    this.habs.forEach( (h, i) => this.asignarCamas(i+1, defaults[i]));
+  }
 
   submitControl(){
     if(this.habs.length>0)

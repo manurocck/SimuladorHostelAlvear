@@ -4,14 +4,19 @@
     color:white;
     text-align: -webkit-center;
     
-    width: 70%;
+    width: 100%;
 }
 @media only screen and (max-width: 450px) {
     .ui.segment{
         width: 100%;
     }    
 }
-
+.ui.container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 2%;
+}
 .body{
     text-align: -webkit-center;
 }
@@ -22,4 +27,10 @@ td{
 
 .ui.table{
     width:fit-content;
+}
+.ui.table:first-child{
+    margin-top: 1em;
+}
+.ui.table:last-child{
+    margin-bottom: 1em;
 }

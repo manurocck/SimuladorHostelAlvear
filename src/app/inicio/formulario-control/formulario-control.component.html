@@ -2,25 +2,31 @@
     <div class="ui segment w-100-sm">
         <h2 class="fw-bold">Completar los valores</h2>
         <div class="ui divider"></div>
-        <table class="ui celled table center aligned">
-            <tbody>
-                <tr *ngFor="let hab of habs">
-                    <td class="fw-bold col-4 px-5">
-                        <i class="bed icon"></i> Habitación {{hab.numId}}
-                    </td>
-                    <td>
-                        <div class="ui input">
-                            <input #cantidad type="number" placeholder="Cantidad de camas"
-                            (keyup)="asignarCamas(hab.numId , cantidad.value)">
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="ui container">
+            <table class="ui celled table center aligned" *ngFor="let hab of habs">
+                <tbody >
+                    <tr >
+                        <td class="fw-bold col-4 px-5">
+                            <i class="bed icon"></i> Habitación {{hab.numId}}
+                        </td>
+                    </tr>
+                    <tr >
+                        <td>
+                            <div class="ui input">
+                                <input #cantidad type="number" placeholder="Cantidad de camas"
+                                [value] = "(hab.camas.length != 0)? hab.camas.length : cantidad.placeholder "
+                                (keyup)="asignarCamas(hab.numId , cantidad.value)">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div class="ui center aligned container">
             <div class="ui huge secondary button" (click)="submitControl()">
-                Simular
+            Simular
             </div>
         </div>
+        <div class="ui secondary button fixed-bottom" (click)="autocompletar()"> Autocompletar </div>
     </div>
 </div>

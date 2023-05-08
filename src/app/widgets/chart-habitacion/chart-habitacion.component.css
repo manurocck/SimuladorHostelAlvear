@@ -1,9 +1,5 @@
-canvas{
-    /* background-color: white; */
-}
-
 h1{
-    color: white;
+    color: var(--bs-dark);;
 }
 
 .chart-container{
@@ -17,7 +13,8 @@ h1{
 }
 
 .ui.container{
-    background-color: rgb(33 37 41 / 80%);
+    background-color: #f8f9fabd;
+    /* background-color: rgb(33 37 41 / 90%); */
     border: 0.75em solid;
     border-color: #5D7963;
     padding: 2%;
