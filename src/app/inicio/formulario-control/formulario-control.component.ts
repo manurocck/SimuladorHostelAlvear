@@ -18,27 +18,33 @@ export class FormularioControlComponent implements OnInit {
 
   submitControl(){
     if(this.habs.length>0)
-    this.submitHabitaciones.emit(this.habs);
+    this.submitHabitaciones.emit();
   }
   
   asignarCamas(numHab : number, cantCamas : string) {
     let numCamas = parseInt(cantCamas);
     this.habs[numHab-1].camas = [];
 
-    let diasDisponibles : Dia[] = [];
     
-    for(let i = 0 ; i<90 ; i++){
-      diasDisponibles.push({ fecha : i , estaDisponible: true});
-    }
+    
+    for (let c = 0; c < numCamas; c++) { // por cada cama
+      
+      let diasDisponibles : Dia[] = [];
+      for(let i = 0 ; i<90 ; i++){       // creo un vector de días
+        diasDisponibles.push({ fecha : i , estaDisponible: true});
+      }
 
-    for (let j = 0; j < numCamas; j++) {
-      let cama = {id : 100*numHab+j, dias: diasDisponibles};
-
+      let cama = {id : 100*numHab+c, dias: diasDisponibles};
+      
       this.habs[numHab-1].camas.push(cama);
     }
   }
 
   ngOnInit(): void {
+    this.asignarCamas(1, "6");
+    this.asignarCamas(2, "5");
+    this.asignarCamas(3, "5");
+    this.asignarCamas(4, "3");
   }
 
 }

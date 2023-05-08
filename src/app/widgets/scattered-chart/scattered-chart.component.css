@@ -1,5 +1,5 @@
 canvas{
-    background-color: white;
+    /* background-color: white; */
 }
 
 h1{
@@ -8,6 +8,7 @@ h1{
 
 .chart-container{
     width : 40%;
+    margin-bottom: 5%;
 }
 @media only screen and (max-width: 700px) {
     .chart-container{
@@ -16,6 +17,10 @@ h1{
 }
 
 .ui.container{
+    background-color: rgb(33 37 41 / 80%);
+    border: 0.75em solid;
+    border-color: #5D7963;
+    padding: 2%;
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;

@@ -9,17 +9,23 @@
         <div class="ui row justify-content-center formulario">
             <div class="col">
                 
-                <app-formulario-control *ngIf="!simulando" [habs]="habitaciones" (submitHabitaciones)="simular()"></app-formulario-control> 
+                <app-formulario-control *ngIf="!simulando" [habs]="habitaciones" (submitHabitaciones)="inicializarChart()"></app-formulario-control> 
                 
+                <div class="ui secondary button fixed-bottom" *ngIf="simulando" (click)="simular()"> Avanzar tiempo </div>
+
                 <scatter-chart class="centeraligned" *ngIf="simulando"
                     [camasLibres]="camasLibres"
-                    [camasOcupadas]="camasOcupadas"></scatter-chart>
+                    [camasOcupadas]="camasOcupadas"
+                    [tiempo]="tiempo"
+                    ></scatter-chart>
             </div>
         </div>
 
         <!-- DEBUG  -->
-        <div class="text-white" *ngFor="let hab of habitaciones">
-            <br><br><br><br>
+        <!-- 
+
+            <div class="text-white" *ngFor="let hab of habitaciones">
+                <br><br><br><br>
             <br><br><br><br>
             <h1>PARA DEBUGUEAR</h1>
             <h2>
@@ -30,15 +36,16 @@
                     Numero cama : {{c.id}} <br>
                 </h3>
                 <p>
-                Ocupacion
+                    Ocupacion
                 </p>
                 <p>
-                <ng-container *ngFor="let d of c.dias">
-                    Día : {{d.fecha}} está {{d.estaDisponible? "disponible": "reservado"}}<br>
-                </ng-container>
+                    <ng-container *ngFor="let d of c.dias">
+                        Día : {{d.fecha}} está {{d.estaDisponible? "disponible": "reservado"}}<br>
+                    </ng-container>
                 </p>
             </ng-container>
             <br>
         </div>
+        -->
     </div>
 </div>
