@@ -66,7 +66,7 @@ export class ChartHabitacion {
       plugins:{
         legend: {
           // display : false // Para ocultar las etiquetas de libre y ocupado
-          position : 'bottom',
+          position : 'top',
         }
       },
       animation: false,

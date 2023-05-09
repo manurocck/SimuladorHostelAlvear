@@ -10,6 +10,13 @@
     padding: 3%;
 }
 
+.statistic{
+    position: fixed;
+
+    left:10%;
+    bottom:10%;
+}
+
 .ui.header:first-child{
     color: #5D7963;
     

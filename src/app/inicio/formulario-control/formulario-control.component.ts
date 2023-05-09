@@ -12,6 +12,8 @@ export class FormularioControlComponent implements OnInit {
   @Input() habs : Habitacion[]=[];
   @Output() submitHabitaciones : EventEmitter<Habitacion[]> = new EventEmitter<Habitacion[]>();
 
+  diasDelVector = 200;
+
   constructor() { }
 
   autocompletar(){
@@ -34,7 +36,7 @@ export class FormularioControlComponent implements OnInit {
     for (let c = 0; c < numCamas; c++) { // por cada cama
       
       let diasDisponibles : Dia[] = [];
-      for(let i = 0 ; i<90 ; i++){       // creo un vector de días
+      for(let i = 0 ; i<this.diasDelVector ; i++){       // creo un vector de días
         diasDisponibles.push({ fecha : i , estaDisponible: true});
       }
 

@@ -18,6 +18,16 @@
                     [camasOcupadas]="camasOcupadas"
                     [tiempo]="tiempo/24"
                     ></chart-habitacion>
+                <div class="ui statistics">
+                    <div class="teal statistic">
+                        <div class="value">
+                            {{tiempo%24}} | {{tiempoRedondeado()}}
+                        </div>
+                        <div class="label">
+                            Hora y Día actual
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
