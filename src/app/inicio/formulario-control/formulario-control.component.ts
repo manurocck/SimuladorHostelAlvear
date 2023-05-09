@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Cama, Dia, Habitacion } from 'src/app/structs/structs';
+import { Dia, Habitacion } from 'src/app/structs/structs';
 
 
 @Component({
@@ -30,9 +30,7 @@ export class FormularioControlComponent implements OnInit {
   asignarCamas(numHab : number, cantCamas : string) {
     let numCamas = parseInt(cantCamas);
     this.habs[numHab-1].camas = [];
-
-    
-    
+  
     for (let c = 0; c < numCamas; c++) { // por cada cama
       
       let diasDisponibles : Dia[] = [];
@@ -47,10 +45,6 @@ export class FormularioControlComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.asignarCamas(1, "6");
-    this.asignarCamas(2, "5");
-    this.asignarCamas(3, "5");
-    this.asignarCamas(4, "3");
   }
 
 }

@@ -1,34 +1,28 @@
 <div class="body">
     <div class="header-container">
         <div class="ui container">
-            <h1 class="ui header display-1 fw-bolder">Hostel Alvear</h1>
-            <h2 class="ui header">Simulación de Polimorfismo <br> de habitaciones</h2>
+            <h1 class="ui header title display-1 fw-bolder" *ngIf="!simulando">Hostel Alvear</h1>
+            <h2 class="ui header subtitle">Simulación de Polimorfismo <br> de habitaciones</h2>
         </div>
     </div>
     <div class="ui center aligned container pb-5">
         <div class="ui row justify-content-center formulario">
             <div class="col">
-                
                 <app-formulario-control *ngIf="!simulando" [habs]="habitaciones" (submitHabitaciones)="inicializarChart()"></app-formulario-control> 
-                
-                <div class="ui secondary button fixed-bottom" *ngIf="simulando" (click)="simular()"> Avanzar tiempo </div>
+            
+                <chart-habitacion class="centeraligned" *ngIf="simulando && !mostrarResultados"
+                [camasLibres]="camasLibres"
+                [camasOcupadas]="camasOcupadas"
+                [tiempo]="tiempo/24"
+                ></chart-habitacion>
 
-                <chart-habitacion class="centeraligned" *ngIf="simulando"
-                    [camasLibres]="camasLibres"
-                    [camasOcupadas]="camasOcupadas"
-                    [tiempo]="tiempo/24"
-                    ></chart-habitacion>
-                <div class="ui statistics">
-                    <div class="teal statistic">
-                        <div class="value">
-                            {{tiempo%24}} | {{tiempoRedondeado()}}
-                        </div>
-                        <div class="label">
-                            Hora y Día actual
-                        </div>
-                    </div>
-                </div>
+                <chart-ganancias [resultadosGanancias]="resultadoRelacionGanancia" *ngIf="mostrarResultados"> </chart-ganancias>
             </div>
         </div>
     </div>
 </div>
+
+<div class="ui button fixed-bottom avanzar" *ngIf="simulando" (click)="avanzarTiempo()"> 
+    <ng-container *ngIf="tiempo!=tiempoFinal">Avanzar tiempo y </ng-container>Mostrar resultados  
+</div>
+<app-clock [tiempo]="tiempo" *ngIf="simulando"></app-clock>

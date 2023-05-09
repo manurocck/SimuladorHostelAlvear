@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-clock',
@@ -11,5 +11,9 @@ export class ClockComponent implements OnInit {
 
   ngOnInit(): void {
   }
-
+  @Input() tiempo = 0;
+  
+  tiempoRedondeado(){
+    return Math.floor(this.tiempo/24);
+  }
 }

@@ -3,7 +3,7 @@
     padding-bottom: 10%;
 }
 
-.ui.header:nth-child(2){
+.ui.header.subtitle{
     background-color: rgb(93, 121, 99);
     width: fit-content;
     color: white;
@@ -12,12 +12,24 @@
 
 .statistic{
     position: fixed;
+    
+    background: var(--bs-light);
+    color: var(--bs-dark);
+    padding: 2%;
+    border-radius: 15%;
+    box-shadow: black 0px 0px 2px;
 
-    left:10%;
-    bottom:10%;
+    left:2%;
+    bottom:5%;
 }
 
-.ui.header:first-child{
+.avanzar{
+    background: rgb(93, 121, 99);
+    color: var(--bs-light);
+    box-shadow: black 0px 0px 2px;
+}
+
+.ui.header.title{
     color: #5D7963;
     
     background-color: white;
@@ -35,6 +47,7 @@
 
 .formulario{
     margin-top: -5%;
+    margin-bottom: 20%;
 }
 
 .body{

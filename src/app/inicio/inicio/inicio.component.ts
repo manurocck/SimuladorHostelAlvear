@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Habitacion } from '../../structs/structs';
+import { GananciaHabitacion, Habitacion } from '../../structs/structs';
 
 const sleep = (ms:number) => new Promise(r => setTimeout(r, ms));
 
@@ -24,11 +24,13 @@ export class InicioComponent implements OnInit {
         };
     }
   }
+  sleepAmount = 1
+
   // RESULTADOS
   // por mes
   resultadoPerdidaRechazos : number[] = [];
   resultadoPorcentajeOcupacion : number[] = [];
-  resultadoRelacionGanancia : number[] = [];
+  resultadoRelacionGanancia : GananciaHabitacion[] = [];
 
   // VECTOR ESTADO
   habitaciones: Habitacion[] = [];
@@ -48,6 +50,7 @@ export class InicioComponent implements OnInit {
   // FLAGS
   hayDisponibilidad = true;
   simulando = false;
+  mostrarResultados = false;
   
   // DATOS PARA GENERAR
   generarCantidadPersonas() { // por el método del rechazo
@@ -110,30 +113,7 @@ export class InicioComponent implements OnInit {
       if (this.tiempo/24 <= this.diaProximoReporte)
         this.tiempo = this.tiempoProximoPedidoReserva;
       else{ // pedí el reporte
-          this.diaProximoReporte+=30;
-
-          let disponibles = 0;
-          let capacidadMes = 0;
-          let fechaInicioMes =  (mes-1)*30;
-          let fechaFinDeMes  = mes*30;
-
-          
-          this.habitaciones.forEach(
-            h => h.camas.forEach( 
-            c=> c.dias.forEach(
-            d=> { if(d.fecha<=fechaFinDeMes && d.fecha>=fechaInicioMes){
-                    capacidadMes++;
-                    if(d.estaDisponible){
-                      disponibles++;
-                    }
-                  }
-                }
-                )))
-                
-          console.log("DEBUG Ocupacion : ", 100*(disponibles/capacidadMes));
-          console.log("DEBUG RelacionGanancia : ", (disponibles/capacidadMes)*this.precioCama);
-          this.resultadoPorcentajeOcupacion.push(100*(disponibles/capacidadMes)); // todo el hostel
-          this.resultadoRelacionGanancia.push((disponibles/capacidadMes)*this.precioCama); // todo el hostel
+          this.reporteMensual(mes);
           mes++;
       }
 
@@ -155,9 +135,8 @@ export class InicioComponent implements OnInit {
 
       // console.log(">>>> SE GENERA UNA NUEVA RESERVA");
       // console.log("Desde el ", fechaReserva, " hasta el ", fechaReserva+tiempoEstadia, "para ", cantidadPersonas, " personas");
-      
-      console.log("Con", diasAnticipacion,(diasAnticipacion==1)?'dia':'dias'," de anticipación");
-      console.log("Por", diasEstadia,(diasEstadia==1)?'noche':'noches');
+      // console.log("Con", diasAnticipacion,(diasAnticipacion==1)?'dia':'dias'," de anticipación");
+      // console.log("Por", diasEstadia,(diasEstadia==1)?'noche':'noches');
 
       this.habitaciones.forEach( 
         habitacion =>{
@@ -208,38 +187,76 @@ export class InicioComponent implements OnInit {
             else {
               //console.log("Reserva RECHAZADA por la habitacion ", habitacion.numId)
               this.perdidaPorRechazos+=cantidadPersonas*diasEstadia*this.precioCama;
-              // Chequeo por mes
-              if( (this.tiempo/24)/30/mes > 1){
-                this.resultadoPerdidaRechazos.push(this.perdidaPorRechazos);
-                this.perdidaPorRechazos = 0;
-              }
             }
           }
         }
       );
       
-      // await sleep(100); // Para hacerla asíncrona
+      if(this.sleepAmount>0) await sleep((100 * this.sleepAmount)); // Para hacerla asíncrona
       // console.log(">>>> FIN EVENTO. Tiempo actual : ", this.tiempo);
     }
-
+    
+    this.tiempo= this.diasDeSimulacion*24;
     this.impresionDeResultados();
   }
+  reporteMensual(mes : number){
+    this.diaProximoReporte+=30;
+          let disponibles = 0;
+          let capacidadMes = 0;
+          let fechaInicioMes =  (mes-1)*30;
+          let fechaFinDeMes  = mes*30;
+          
+          this.habitaciones.forEach(
+            h => {
+              let capacidadMesHab = 0;
+              let disponiblesHab = 0;
+              h.camas.forEach(     
+              c=> c.dias.forEach(
+              d=> { if(d.fecha<=fechaFinDeMes && d.fecha>=fechaInicioMes){
+                      capacidadMes++;
+                      capacidadMesHab++;
+                      if(d.estaDisponible){
+                        disponibles++;
+                        disponiblesHab++;
+                      }
+                    }
+                  }
+                  )
+              );
 
+              this.resultadoRelacionGanancia.push( {numHab : h.numId, ganancia: Math.round(( (capacidadMesHab-disponiblesHab))*this.precioCama) }  ); // todo el hostel
+
+            }
+          )
+          this.resultadoPorcentajeOcupacion.push(100*((capacidadMes-disponibles)/capacidadMes)); // todo el hostel
+          this.resultadoPerdidaRechazos.push(this.perdidaPorRechazos);
+          this.perdidaPorRechazos = 0;
+  }
   impresionDeResultados(){
     console.log(">>>>>> DINERO PERDIDO POR MES");
     this.resultadoPerdidaRechazos.forEach( (r,index) => console.log("Dinero perdido por rechazos en mes",index+1,':',r));
     console.log(">>>>>>");
     console.log(">>>>>>");
+    console.log(">>>>>>");
     console.log(">>>>>> PORCENTAJE DE OCUPACIÓN POR MES");
     this.resultadoPorcentajeOcupacion.forEach( (r,index) => console.log("Porcentaje de ocupación en mes",index+1,':',r));
     console.log(">>>>>>");
-    console.log(">>>>>> RELACIÓN ENTRE GANANCIA MÁXIMA Y LA SIMULADA");
-    this.resultadoRelacionGanancia.forEach( (r,index) => console.log("Relación entre la ganancia máxima de la habitación y la ganancia simulada en el mes",index+1,':',r));
     console.log(">>>>>>");
     console.log(">>>>>>");
+    console.log(">>>>>> GANANCIA POR HABITACION POR MES");
+    for(let i = 0; i<(this.resultadoRelacionGanancia.length/this.habitaciones.length); i++){
+      let indiceInicioMes=i*this.habitaciones.length;
+      console.log(">>> MES",i+1);
+      for(let j = 0; j<this.habitaciones.length ; j++){
+        console.log("Ganancia habitación",this.resultadoRelacionGanancia[i+j].numHab,':',this.resultadoRelacionGanancia[i+j].ganancia);
+
+      }
+    }
     console.log(">>>>>>");
-    console.log(">>>>>>");
-    console.log(">>>>>> Fin del comunicado");
+    console.log(">>>>>");
+    console.log(">>>>");
+    console.log(">>>");
+    console.log(">> Fin del comunicado");
   }
 
   // auxiliares
@@ -256,33 +273,23 @@ export class InicioComponent implements OnInit {
     var z = Math.sqrt(-2.0 * Math.log(u1)) * Math.cos(2.0 * Math.PI * u2);
     return z;
   }
-  tiempoRedondeado(){
-    return Math.floor(this.tiempo/24);
+  avanzarTiempo(){
+    if(this.sleepAmount != 0) {this.sleepAmount = 0;}
+    else {this.mostrarResultados = true;}
   }
 
-  // f.d.p's
+  // f.d.p.
   distLogaritmica( x : number){
     let theeta = 0.45978;
-    let resultado = ( (-1) / Math.log (1-theeta) ) * ( ( (theeta)**(x)) / x );
 
-    // Para debuguear
-    // console.log("<> Valores de la distribución logarítmica");
-    // let acumulacion = 0;
-    // for(let i = 1 ; i<7; i++){
-    //   console.log("<> En ",i,':', this.distLogaritmica(i));
-    //   acumulacion += this.distLogaritmica(i);
-    // }
-    // console.log("Acumulación de probabilidad : ", acumulacion);
+    let factorA = (-1) / Math.log (1-theeta);
+    let factorB = ( (theeta)**(x)) / x ;
 
-    // funcion de acumulación 
-    // if(x>1)
-    //   resultado += this.distLogaritmica(x-1);
-
-    return resultado;
+    return factorA * factorB;
   }
 
   randJohnson(){
-    let gamma = 1; //creo que era 2, si no cambiar a 1
+    let gamma = 1;
     let delta = 1;
     let lambda = 1;
     let chi = 0;

@@ -6,7 +6,7 @@ import { ChartConfiguration, ChartData, ChartEvent, ChartType } from 'chart.js';
   templateUrl: './chart-habitacion.component.html',
   styleUrls: [ './chart-habitacion.component.css' ]
 })
-export class ChartHabitacion {  
+export class ChartHabitacionComponent {  
   habitaciones : number[] = []; // Array contenedor de todas las camas sin repetidos
   etiquetas    : string[] = []; // Array contenedor de todas las camas  
 

@@ -1,0 +1,13 @@
+
+.statistic{
+    position: fixed;
+    
+    background: var(--bs-light);
+    color: var(--bs-dark);
+    padding: 2%;
+    border-radius: 15%;
+    box-shadow: black 0px 0px 2px;
+
+    left:2%;
+    bottom:5%;
+}
