@@ -19,10 +19,3 @@ export interface GananciaHabitacion{
   numHab : number;
   ganancia : number;
 }
-
-export interface ColorSimu{
-  r:number;
-  g:number;
-  b:number;
-  a:number;
-}

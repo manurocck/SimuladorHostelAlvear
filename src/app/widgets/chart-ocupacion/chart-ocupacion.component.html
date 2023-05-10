@@ -1,0 +1,8 @@
+<div class="ui container" >
+    <div class="chart-container" *ngFor="let mes of ocupacionPorMes; index as i;">
+        <canvas baseChart class="chart"
+                [data]="dataPorMes(i+1)"
+                [type]="doughnutChartType">
+        </canvas>
+    </div>
+</div>

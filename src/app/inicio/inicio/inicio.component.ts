@@ -10,9 +10,15 @@ const sleep = (ms:number) => new Promise(r => setTimeout(r, ms));
 })
 
 export class InicioComponent implements OnInit {
-  constructor() {}
+  constructor() {
+  }
+
+  randomTest : number[] = [];
 
   ngOnInit(): void {
+    for(let i = 0 ; i<500 ; i++){
+      this.randomTest.push((this.generateNormalNumberDistribution()+3)*4);
+    }
     this.inicializar();
   }
 
@@ -24,26 +30,45 @@ export class InicioComponent implements OnInit {
         };
     }
   }
+  volverASimular(){
+    this.tiempo = 0;
+    this.tiempoProximoPedidoReserva = 0;
+    this.diaProximoReporte = 30;
+    
+    this.resultadoPerdidaRechazos  = [];
+    this.resultadoPorcentajeOcupacion  = [];
+    this.resultadoTotalGanancia  = [];
+    this.habitaciones.forEach(h=>h.camas.forEach(c=>c.dias.forEach(d=>d.estaDisponible=false)));
+    this.simular();
+    this.impresionDeResultados();
+
+  }
+
+
   sleepAmount = 1
 
   // RESULTADOS
   // por mes
   resultadoPerdidaRechazos : number[] = [];
   resultadoPorcentajeOcupacion : number[] = [];
-  resultadoRelacionGanancia : GananciaHabitacion[] = [];
+  resultadoTotalGanancia : GananciaHabitacion[] = [];
+  resultadoPorcentajeRechazos : number = 0;
 
   // VECTOR ESTADO
   habitaciones: Habitacion[] = [];
 
   // CONDICIONES INICIALES DEL MODELO
-  precioCama  = 17.70; // usd
-  perdidaPorRechazos = 0;
+  precioCamaBase  = 17.70; // usd
+  sumaPerdidaRechazos = 0;
+  sumaReservasArrepentidas = 0;
+  sumaReservasTotales = 0;
+  sumaGanancia = 0;
   totalHabitaciones = 11;
   
   tiempo = 0;
   tiempoProximoPedidoReserva = 0;
-
   diaProximoReporte = 30;
+
   diasDeSimulacion = 100;
   tiempoFinal = this.diasDeSimulacion*24; // no tocar
   
@@ -72,11 +97,18 @@ export class InicioComponent implements OnInit {
     return this.inverseGaussian();
   }
 
-  generarIntervaloPedidosReserva() { // probabilidad uniforme de ocurrencia
-    let posibilidades = [0.5,1,2];
-    let indiceRandom = Math.floor(( (Math.random()+1)*100)%3);
-    
-    return posibilidades[indiceRandom];
+  generarIntervaloPedidosReserva(tiempoEnHoras:number) { // depender del día
+    let dia = tiempoEnHoras%168;
+
+    if(dia<120){ // día de semana
+      return (this.generateNormalNumberDistribution()+3)*4;
+    }else{ // fin de semana
+      let posibilidades = [0.5,1,2];
+      let indiceRandom = Math.floor(( (Math.random()+1)*100)%3);
+      
+      return posibilidades[indiceRandom];
+    }
+
   }
   generarTiempoAnticipacionReserva() { // probabilidad uniforme de ocurrencia
     let posibilidades = [0
@@ -100,11 +132,6 @@ export class InicioComponent implements OnInit {
     return posibilidades[indiceRandom];
   }
 
-  calcularPrecio( cantidadPersonas: number, tiempoEstadia: number ) {
-    // definir precio fijo por persona
-    return this.precioCama * cantidadPersonas * tiempoEstadia;
-  }
-
   async simular() {
     let mes = 1;
     this.simulando = true;
@@ -118,7 +145,7 @@ export class InicioComponent implements OnInit {
       }
 
       // Se atiende de 7 a 23 hs
-      this.tiempoProximoPedidoReserva = this.tiempo + this.generarIntervaloPedidosReserva();
+      this.tiempoProximoPedidoReserva = this.tiempo + this.generarIntervaloPedidosReserva(this.tiempo);
       // console.log("El próximo pedido será a las :",this.tiempoProximoPedidoReserva%24,'horas');
       if(this.tiempoProximoPedidoReserva%24 < 7){
         this.tiempoProximoPedidoReserva -= (this.tiempoProximoPedidoReserva%24); 
@@ -147,7 +174,6 @@ export class InicioComponent implements OnInit {
                 let diasLibre = 0;
                 
                 for(let f = fechaReserva ; f < fechaReserva+diasEstadia ; f++){
-                  
                   if(cama.dias[f].estaDisponible) diasLibre++;
                 }
                 if(diasLibre >= diasEstadia) camasMeSirven++;
@@ -155,38 +181,55 @@ export class InicioComponent implements OnInit {
             )
 
             if(camasMeSirven >= cantidadPersonas) { // Asigno reserva en esta hab
-              // console.log("Reserva ACEPTADA por habitacion ", habitacion.numId)
-              reservaAceptada = true;
+              // console.log("Reserva PARCIALMENTE ACEPTADA por habitacion ", habitacion.numId)
+              // reservaAceptada = true;
               let cantCamas = habitacion.camas.length;
+              let seArrepiente = this.arrepentimiento(cantCamas, cantidadPersonas);
+              if(seArrepiente) this.sumaReservasArrepentidas++;
+              this.sumaReservasTotales++;
+
+              reservaAceptada = !seArrepiente;
               let camasAsignadas = 0;
       
-              for(let f = fechaReserva ; f<(diasEstadia+fechaReserva) ; f++){ //iteración por fecha
-                camasAsignadas = 0;
-                for(let c = 0; c<cantCamas ; c++){
-                  // Marcar como no disponible CP cantidad de camas en la fecha F
-                  if(habitacion.camas[c].dias[f].estaDisponible){
-                    // actualizo vector estado
-                    habitacion.camas[c].dias[f].estaDisponible = false;
-                    
-                    // actualizo puntos gráfico
-                    let data = {x: f, y : habitacion.camas[c].id};
-                    this.camasOcupadas.push(data);
+              if(reservaAceptada){
+                for(let f = fechaReserva ; f<(diasEstadia+fechaReserva) ; f++){ //iteración por fecha
+                  camasAsignadas = 0;
+                  for(let c = 0; c<cantCamas ; c++){
+                    // Marcar como no disponible CP cantidad de camas en la fecha F
+                    if(habitacion.camas[c].dias[f].estaDisponible){
+                      // actualizo vector estado
+                      habitacion.camas[c].dias[f].estaDisponible = false;
+                      
+                      // actualizo puntos gráfico
+                      let data = {x: f, y : habitacion.camas[c].id};
+                      this.camasOcupadas.push(data);
 
-                    // camaLibre : (x,y) = (fecha, id)
-                    let index = this.camasLibres.findIndex( punto => punto.y == data.y && punto.x == data.x);
-                    this.camasLibres.splice(index,1);
+                      // camaLibre : (x,y) = (fecha, id)
+                      let index = this.camasLibres.findIndex( punto => punto.y == data.y && punto.x == data.x);
+                      this.camasLibres.splice(index,1);
 
-                    camasAsignadas++;
-                    if(camasAsignadas == cantidadPersonas){
-                      c = cantCamas;
+                      camasAsignadas++;
+                      if(camasAsignadas == cantidadPersonas){
+                        c = cantCamas;
+                      }
                     }
                   }
                 }
+                let precioPorPersona = this.precioCamaBase;                   
+                if(cantCamas != 1){ //precio base - % * cama 
+                  precioPorPersona += (0.1*(cantCamas)**2 )-1.6*cantCamas;
+                }
+                this.sumaGanancia += precioPorPersona * cantidadPersonas;
               }  
             }
             else {
               //console.log("Reserva RECHAZADA por la habitacion ", habitacion.numId)
-              this.perdidaPorRechazos+=cantidadPersonas*diasEstadia*this.precioCama;
+              let cantCamas = habitacion.camas.length;
+              let precioPorPersona = this.precioCamaBase;                   
+                if(cantCamas != 1){ //precio base - % * cama 
+                  precioPorPersona += (0.1*(cantCamas)**2 )-1.6*cantCamas;
+                }
+              this.sumaPerdidaRechazos+=cantidadPersonas*diasEstadia*precioPorPersona;
             }
           }
         }
@@ -199,6 +242,49 @@ export class InicioComponent implements OnInit {
     this.tiempo= this.diasDeSimulacion*24;
     this.impresionDeResultados();
   }
+
+  arrepentimiento(numCamas : number, cantidadPersonas : number){
+    let rand = Math.random();
+    let arrepentimiento;
+    let relacionMaxCamasPersonas = numCamas/cantidadPersonas;
+
+    let h = -0.175;
+    let max = 0.7 + h;
+    let x = cantidadPersonas;
+    let fx = 0;
+
+    switch(cantidadPersonas){
+            case 1:
+                (rand<.9)? arrepentimiento = false : arrepentimiento = true;
+            break;
+            case 2:
+                if(relacionMaxCamasPersonas!=1 && rand<.5) {arrepentimiento = true; break;}
+                let rand1 = Math.random();
+                let y2 = max * rand1 + h;
+
+                if(x<=3) fx = 0.1*x+0.5+h;
+                if(x>3) fx = -0.2*x+1.3+h;
+
+                (y2<=fx)? arrepentimiento = false : arrepentimiento = true;
+            break;
+            case 3:
+            case 4:
+                let rand2 = Math.random();
+                let y = max * rand2 + h;
+
+                if(x<=3) fx = 0.1*x+0.5+h;
+                if(x>3) fx = -0.2*x+1.3+h;
+
+                (y<=fx)? arrepentimiento = false : arrepentimiento = true;
+            break;
+            default:
+              arrepentimiento = false;
+            break;
+    }
+
+    return arrepentimiento;
+  }
+
   reporteMensual(mes : number){
     this.diaProximoReporte+=30;
           let disponibles = 0;
@@ -224,13 +310,14 @@ export class InicioComponent implements OnInit {
                   )
               );
 
-              this.resultadoRelacionGanancia.push( {numHab : h.numId, ganancia: Math.round(( (capacidadMesHab-disponiblesHab))*this.precioCama) }  ); // todo el hostel
+              this.resultadoTotalGanancia.push( {numHab : h.numId, ganancia: Math.round(this.sumaGanancia) }  ); // todo el hostel
 
             }
           )
           this.resultadoPorcentajeOcupacion.push(100*((capacidadMes-disponibles)/capacidadMes)); // todo el hostel
-          this.resultadoPerdidaRechazos.push(this.perdidaPorRechazos);
-          this.perdidaPorRechazos = 0;
+          this.resultadoPerdidaRechazos.push(this.sumaPerdidaRechazos);
+          this.sumaPerdidaRechazos = 0;
+          this.sumaGanancia = 0;
   }
   impresionDeResultados(){
     console.log(">>>>>> DINERO PERDIDO POR MES");
@@ -244,14 +331,20 @@ export class InicioComponent implements OnInit {
     console.log(">>>>>>");
     console.log(">>>>>>");
     console.log(">>>>>> GANANCIA POR HABITACION POR MES");
-    for(let i = 0; i<(this.resultadoRelacionGanancia.length/this.habitaciones.length); i++){
+    for(let i = 0; i<(this.resultadoTotalGanancia.length/this.habitaciones.length); i++){
       let indiceInicioMes=i*this.habitaciones.length;
       console.log(">>> MES",i+1);
       for(let j = 0; j<this.habitaciones.length ; j++){
-        console.log("Ganancia habitación",this.resultadoRelacionGanancia[i+j].numHab,':',this.resultadoRelacionGanancia[i+j].ganancia);
-
+        console.log("Ganancia habitación",this.resultadoTotalGanancia[i+j].numHab,':',this.resultadoTotalGanancia[i+j].ganancia);
+        
       }
     }
+    console.log(">>>>>>");
+    console.log(">>>>>>");
+    console.log(">>>>>>");
+    console.log(">>>>>> PORCENTAJE DE RECHAZOS");
+    this.resultadoPorcentajeRechazos = (this.sumaReservasArrepentidas/this.sumaReservasTotales)*100;
+    console.log(this.resultadoPorcentajeRechazos);
     console.log(">>>>>>");
     console.log(">>>>>");
     console.log(">>>>");

@@ -7,6 +7,7 @@ import { ChartHabitacionComponent } from './chart-habitacion/chart-habitacion.co
 import { ModalComponent } from './modal/modal.component';
 import { ClockComponent } from './clock/clock.component';
 import { ChartGananciasComponent } from './chart-ganancias/chart-ganancias.component';
+import { ChartOcupacionComponent } from './chart-ocupacion/chart-ocupacion.component';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { ChartGananciasComponent } from './chart-ganancias/chart-ganancias.compo
     ChartHabitacionComponent,
     ModalComponent,
     ClockComponent,
-    ChartGananciasComponent
+    ChartGananciasComponent,
+    ChartOcupacionComponent
   ],
   imports: [
     CommonModule,
@@ -22,6 +24,7 @@ import { ChartGananciasComponent } from './chart-ganancias/chart-ganancias.compo
     WidgetsRoutingModule
   ],
   exports: [
+    ChartOcupacionComponent,
     ChartHabitacionComponent,
     ChartGananciasComponent,
     ClockComponent

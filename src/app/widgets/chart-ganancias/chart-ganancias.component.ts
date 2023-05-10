@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { Chart, ChartConfiguration, ChartData, ChartEvent, ChartType, Color } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
-import { ColorSimu, GananciaHabitacion } from 'src/app/structs/structs';
+import { GananciaHabitacion } from 'src/app/structs/structs';
 
 @Component({
   selector: 'chart-ganancias',
@@ -32,7 +32,11 @@ export class ChartGananciasComponent implements OnInit {
   
   lineChartData : ChartConfiguration['data'] = {
     datasets : [],
-    labels : []
+    labels : [],
+  };
+  lineChartTotalData : ChartConfiguration['data'] = {
+    datasets : [],
+    labels : [],
   };
 
   inicializar(){
@@ -46,14 +50,39 @@ export class ChartGananciasComponent implements OnInit {
       // };
       
       this.resultadosGanancias.forEach( res => !habitaciones.includes(res.numHab)? habitaciones.push(res.numHab) : '' );
+      let cantidadHabitaciones = habitaciones.length;
+      let sumaTotalMeses : number[] = [];
       
+      // GANANCIA TOTAL
+      for(let i=0; i<cantidadHabitaciones ; i++){
+        let sumaTotalMes = 0;
+        for (let j = i*(cantidadHabitaciones) ; j<(cantidadHabitaciones*(i+1)) ; j++){
+          sumaTotalMes += this.resultadosGanancias[i].ganancia;
+        }
+        sumaTotalMeses.push(sumaTotalMes);
+      }
+
+        this.lineChartTotalData.datasets.push(
+        {
+          data: sumaTotalMeses,
+          label: 'Ganancia',
+          backgroundColor:       'rgba(131, 227, 119,0.1)',
+          borderColor:           'rgba(131, 227, 119,1)',
+          pointBackgroundColor:  'rgba(131, 227, 119,1)',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: 'rgba(131, 227, 119,0.5)',
+          fill: 'origin',
+        }
+        )
+
       habitaciones.forEach( (num, index) => 
         {
           // let indicePaleta = (index!=0)? this.paletaColores.length%index : 0;
           let colorHab = this.paletaColores[index%this.paletaColores.length];
           let gananciasHab = this.resultadosGanancias.sort( (a,b) => (a.numHab - b.numHab) ).filter( r => r.numHab == num).map(r => r.ganancia);
-          console.log("HAB",num);
-          console.log(gananciasHab);
+          // console.log("HAB",num);
+          // console.log(gananciasHab);
           this.lineChartData.datasets.push(
           {
             data: gananciasHab,
@@ -71,8 +100,8 @@ export class ChartGananciasComponent implements OnInit {
         )
 
       for( let i = 0; i< cantidadMeses; i++) this.lineChartData.labels?.push("Mes "+(i+1).toString())
-      console.log("DEBUG 2");
-      console.log(this.lineChartData);
+      // console.log("DEBUG 2");
+      // console.log(this.lineChartData);
       // this.lineChartData = chartConfiguracion;
     }
     
@@ -122,41 +151,42 @@ export class ChartGananciasComponent implements OnInit {
   //   ],
   //   labels: [ 'January', 'February', 'March', 'April', 'May', 'June', 'July' ]
   // };
+ 
 
   public lineChartOptions: ChartConfiguration['options'] = {
     elements: {
       line: {
         tension: 0.5
-      }
+      },
     },
     scales: {
       // We use this empty structure as a placeholder for dynamic theming.
       y:
         {
           title: {
-            text: 'Ganancias en dólares'
+            text: 'Ganancias en dólares',
+            display: true,
           },
           position: 'left',
         },
-      y1: {
-        position: 'right',
-        grid: {
-          color: 'rgba(207, 199, 210,0.3)',
-        },
-        ticks: {
-          color: 'rgba(207, 199, 210,1)'
-        }
-      }
+      // y1: {
+      //   position: 'right',
+      //   grid: {
+      //     color: 'rgba(207, 199, 210,0.3)',
+      //   },
+      //   ticks: {
+      //     color: 'rgba(207, 199, 210,1)'
+      //   }
+      // }
     },
-
     plugins: {
-      legend: { 
+      legend: {
         display: true,
         position : 'bottom',
        },
     }
   };
-
+  
   public lineChartType: ChartType = 'line';
 
   @ViewChild(BaseChartDirective) chart?: BaseChartDirective;

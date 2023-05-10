@@ -1,3 +1,6 @@
+<!-- <div class="ui container">
+    <ng-container class="ui title" *ngFor="let n of randomTest">{{n}},</ng-container>
+</div> -->
 <div class="body">
     <div class="header-container">
         <div class="ui container">
@@ -15,8 +18,9 @@
                 [camasOcupadas]="camasOcupadas"
                 [tiempo]="tiempo/24"
                 ></chart-habitacion>
-
-                <chart-ganancias [resultadosGanancias]="resultadoRelacionGanancia" *ngIf="mostrarResultados"> </chart-ganancias>
+                
+                <!-- <chart-ocupacion [ocupacionPorMes]="resultadoPorcentajeOcupacion" *ngIf="mostrarResultados"></chart-ocupacion> -->
+                <chart-ganancias [resultadosGanancias]="resultadoTotalGanancia" *ngIf="mostrarResultados"> </chart-ganancias>
             </div>
         </div>
     </div>
@@ -25,4 +29,9 @@
 <div class="ui button fixed-bottom avanzar" *ngIf="simulando" (click)="avanzarTiempo()"> 
     <ng-container *ngIf="tiempo!=tiempoFinal">Avanzar tiempo y </ng-container>Mostrar resultados  
 </div>
-<app-clock [tiempo]="tiempo" *ngIf="simulando"></app-clock>
+<app-clock [tiempo]="tiempo" *ngIf="simulando && !mostrarResultados"></app-clock>
+
+
+<div class="ui primary button fixed-bottom" *ngIf="mostrarResultados" (click)="volverASimular()"> 
+    Volver a simular 
+</div>

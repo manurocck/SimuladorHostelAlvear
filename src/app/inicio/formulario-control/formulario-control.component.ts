@@ -43,8 +43,72 @@ export class FormularioControlComponent implements OnInit {
       this.habs[numHab-1].camas.push(cama);
     }
   }
+  escenario(num : number){
+    switch(num){
+      case 1:
+          this.asignarCamas(1, "4");
+          this.asignarCamas(2, "4");
+          this.asignarCamas(3, "8");
+          this.asignarCamas(4, "8");
+          this.asignarCamas(5, "8");
+          this.asignarCamas(6, "0");
+          this.asignarCamas(7, "4");
+          this.asignarCamas(8, "1");
+          this.asignarCamas(9, "1");
+          this.asignarCamas(10, "3");
+          this.asignarCamas(11, "4");
+        break;
+      case 2:
+        this.asignarCamas(1, "2");
+        this.asignarCamas(2, "2");
+        this.asignarCamas(3, "8");
+        this.asignarCamas(4, "8");
+        this.asignarCamas(5, "8");
+        this.asignarCamas(6, "0");
+        this.asignarCamas(7, "4");
+        this.asignarCamas(8, "1");
+        this.asignarCamas(9, "1");
+        this.asignarCamas(10, "3");
+        this.asignarCamas(11, "4");
+        break;
+      case 3:
+        this.asignarCamas(1, "4");
+        this.asignarCamas(2, "4");
+        this.asignarCamas(3, "4");
+        this.asignarCamas(4, "4");
+        this.asignarCamas(5, "4");
+        this.asignarCamas(6, "0");
+        this.asignarCamas(7, "4");
+        this.asignarCamas(8, "1");
+        this.asignarCamas(9, "1");
+        this.asignarCamas(10, "3");
+        this.asignarCamas(11, "4");
+        break;
+      case 4:
+        this.asignarCamas(1, "2");
+        this.asignarCamas(2, "2");
+        this.asignarCamas(3, "2");
+        this.asignarCamas(4, "2");
+        this.asignarCamas(5, "2");
+        this.asignarCamas(6, "0");
+        this.asignarCamas(7, "2");
+        this.asignarCamas(8, "1");
+        this.asignarCamas(9, "1");
+        this.asignarCamas(10, "2");
+        this.asignarCamas(11, "2");
+        break;
+    }
+  }
 
   ngOnInit(): void {
+    // ESCENARIO 1 (Máximos)
+    // this.escenario(1);
+    // ESCENARIO 2
+    // this.escenario(2);
+    // ESCENARIO 3
+    // this.escenario(3);
+    // ESCENARIO 4 ( Mínimos corte telo )
+    this.escenario(4);
   }
 
 }
